@@ -17,14 +17,11 @@ export default function DashboardPage() {
     try {
       setError("");
       const telegramId = getTelegramId();
-      await api("/api/auth/telegram", {
-        method: "POST",
-        body: JSON.stringify({ telegramId, firstName: "Web User" })
-      });
+      if (!telegramId) throw new Error("Missing Telegram login");
       const data = await api<Progress>(`/api/water-log/today?telegramId=${telegramId}`);
       setProgress(data);
     } catch {
-      setError("Backend বা database connect হচ্ছে না। .env DATABASE_URL check করে server restart করুন।");
+      setError("Telegram login করুন, অথবা backend/database connection check করুন।");
     } finally {
       setLoading(false);
     }
@@ -97,10 +94,11 @@ export default function DashboardPage() {
               <p className="text-4xl font-semibold text-water">{progress.percent}%</p>
               <p className="text-sm text-slate-500">{progress.consumedMl}ml / {progress.targetMl}ml</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-4">
               <Stat label="Remaining" value={`${progress.remainingMl}ml`} tone="coral" />
               <Stat label="Last drink" value={progress.lastDrinkAt ? new Date(progress.lastDrinkAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "None"} tone="leaf" />
               <Stat label="Next reminder" value={`${progress.user.reminderIntervalMinutes} min`} />
+              <Stat label="Streak" value={`${progress.streakCount} days`} tone="leaf" />
             </div>
           </section>
 

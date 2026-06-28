@@ -13,6 +13,7 @@ export default function SettingsPage() {
     activeStartTime: "08:00",
     activeEndTime: "22:00",
     reminderEnabled: true,
+    timezone: "Asia/Dhaka",
     defaultDrinkAmountMl: 250
   });
   const [error, setError] = useState("");
@@ -26,6 +27,7 @@ export default function SettingsPage() {
         activeStartTime: data.user.activeStartTime,
         activeEndTime: data.user.activeEndTime,
         reminderEnabled: data.user.reminderEnabled,
+        timezone: data.user.timezone,
         defaultDrinkAmountMl: data.user.settings?.defaultDrinkAmountMl ?? 250
       });
     }).catch(() => setError("Backend বা database connect হচ্ছে না।"));
@@ -58,6 +60,7 @@ export default function SettingsPage() {
         <Field label="Reminder interval minutes" type="number" min={1} max={1440} value={form.reminderIntervalMinutes} onChange={(value) => setForm({ ...form, reminderIntervalMinutes: Number(value) })} />
         <Field label="Active start" type="time" value={form.activeStartTime} onChange={(value) => setForm({ ...form, activeStartTime: value })} />
         <Field label="Active end" type="time" value={form.activeEndTime} onChange={(value) => setForm({ ...form, activeEndTime: value })} />
+        <Field label="Timezone" type="text" value={form.timezone} onChange={(value) => setForm({ ...form, timezone: value })} />
         <Field label="Default drink amount ml" type="number" value={form.defaultDrinkAmountMl} onChange={(value) => setForm({ ...form, defaultDrinkAmountMl: Number(value) })} />
         <label className="flex items-center gap-3 rounded border border-slate-200 px-3 py-2">
           <input type="checkbox" checked={form.reminderEnabled} onChange={(event) => setForm({ ...form, reminderEnabled: event.target.checked })} />

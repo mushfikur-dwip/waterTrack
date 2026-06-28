@@ -36,6 +36,7 @@ export async function updateUserSettings(telegramId: string, data: {
   activeStartTime?: string;
   activeEndTime?: string;
   reminderEnabled?: boolean;
+  timezone?: string;
   defaultDrinkAmountMl?: number;
   snoozeMinutes?: number;
   weeklyReportEnabled?: boolean;
@@ -48,6 +49,7 @@ export async function updateUserSettings(telegramId: string, data: {
       activeStartTime: data.activeStartTime,
       activeEndTime: data.activeEndTime,
       reminderEnabled: data.reminderEnabled,
+      timezone: data.timezone,
       settings: {
         upsert: {
           create: {

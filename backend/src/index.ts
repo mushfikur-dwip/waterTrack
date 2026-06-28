@@ -32,6 +32,19 @@ app.use(cors({
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
+app.post("/telegram/webhook", async (req, res, next) => {
+  try {
+    if (!bot) return res.sendStatus(404);
+    const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
+    if (secret && req.header("x-telegram-bot-api-secret-token") !== secret) {
+      return res.sendStatus(401);
+    }
+    await bot.handleUpdate(req.body);
+    return res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+});
 app.use("/api/auth", authRouter);
 app.use("/api", authRouter);
 app.use("/api/user", userRouter);
@@ -49,8 +62,25 @@ app.use((error: unknown, _req: express.Request, res: express.Response, _next: ex
 
 const port = Number(process.env.PORT ?? 4000);
 app.listen(port, async () => {
-  if (bot && process.env.BOT_MODE !== "webhook") {
-    bot.launch().then(() => {
+  if (bot && process.env.BOT_MODE === "webhook") {
+    const publicUrl = process.env.BACKEND_PUBLIC_URL;
+    if (!publicUrl) {
+      console.error("BACKEND_PUBLIC_URL is required when BOT_MODE=webhook");
+    } else {
+      const webhookUrl = `${publicUrl.replace(/\/$/, "")}/telegram/webhook`;
+      bot.telegram.setWebhook(webhookUrl, process.env.TELEGRAM_WEBHOOK_SECRET ? {
+        secret_token: process.env.TELEGRAM_WEBHOOK_SECRET
+      } : undefined).then(() => {
+        console.log(`Telegram webhook set: ${webhookUrl}`);
+      }).catch((error) => {
+        const message = error instanceof Error ? error.message : "Unknown webhook error";
+        console.error(`Telegram webhook setup failed: ${message}`);
+      });
+    }
+    startReminderScheduler(bot);
+    console.log("Reminder scheduler started");
+  } else if (bot) {
+    bot.telegram.deleteWebhook().then(() => bot.launch()).then(() => {
       console.log("Telegram bot polling started");
     }).catch((error) => {
       const message = error instanceof Error ? error.message : "Unknown bot launch error";

@@ -87,5 +87,33 @@ npm --workspace frontend run build
 ## Notes
 
 - The bot uses polling by default with `BOT_MODE=polling`.
-- The web portal stores the Telegram ID in browser local storage.
-- If no Telegram ID is saved, the portal uses `demo-user` for local testing.
+- Production should use `BOT_MODE=webhook` with an HTTPS `BACKEND_PUBLIC_URL`.
+- The web portal uses Telegram Login Widget. Set `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME`.
+- The web portal stores the verified Telegram ID in browser local storage.
+- Reminder scheduling uses a PostgreSQL advisory lock to avoid duplicate reminder ticks across instances.
+
+## Production Bot Mode
+
+For a Node.js server with HTTPS:
+
+```bash
+BOT_MODE=webhook
+BACKEND_PUBLIC_URL="https://api.yourdomain.com"
+WEB_APP_URL="https://yourdomain.com"
+TELEGRAM_WEBHOOK_SECRET="generate-a-long-random-string"
+NEXT_PUBLIC_TELEGRAM_BOT_USERNAME="your_bot_username"
+```
+
+The backend exposes:
+
+```txt
+POST /telegram/webhook
+```
+
+In local development, keep:
+
+```bash
+BOT_MODE=polling
+BACKEND_PUBLIC_URL="http://localhost:4000"
+WEB_APP_URL="http://localhost:3000"
+```

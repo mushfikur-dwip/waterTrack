@@ -58,7 +58,7 @@ export async function getUsersDueForReminder(now = new Date()) {
 
   const due = [];
   for (const user of users) {
-    if (!isInsideActiveWindow(now, user.activeStartTime, user.activeEndTime)) continue;
+    if (!isInsideActiveWindow(now, user.activeStartTime, user.activeEndTime, user.timezone)) continue;
 
     const progress = await getTodayProgress(user.telegramId);
     if (progress.remainingMl <= 0) continue;
@@ -70,7 +70,7 @@ export async function getUsersDueForReminder(now = new Date()) {
       where: {
         userId: user.id,
         status: "snoozed",
-        scheduledAt: { gte: startOfLocalDay() }
+        scheduledAt: { gte: startOfLocalDay(now, user.timezone) }
       },
       orderBy: { scheduledAt: "desc" }
     });

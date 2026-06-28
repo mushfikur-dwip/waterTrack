@@ -4,8 +4,10 @@ export type Progress = {
   remainingMl: number;
   percent: number;
   lastDrinkAt: string | null;
+  streakCount: number;
   user: {
     telegramId: string;
+    timezone: string;
     dailyTargetMl: number;
     reminderIntervalMinutes: number;
     activeStartTime: string;

@@ -11,6 +11,14 @@ const settingsSchema = z.object({
   activeStartTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   activeEndTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   reminderEnabled: z.boolean().optional(),
+  timezone: z.string().min(1).refine((timeZone) => {
+    try {
+      Intl.DateTimeFormat(undefined, { timeZone });
+      return true;
+    } catch {
+      return false;
+    }
+  }, "Invalid timezone").optional(),
   defaultDrinkAmountMl: z.number().int().min(50).optional(),
   snoozeMinutes: z.number().int().min(1).optional(),
   weeklyReportEnabled: z.boolean().optional()
