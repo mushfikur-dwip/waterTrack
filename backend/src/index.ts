@@ -50,8 +50,14 @@ app.use((error: unknown, _req: express.Request, res: express.Response, _next: ex
 const port = Number(process.env.PORT ?? 4000);
 app.listen(port, async () => {
   if (bot && process.env.BOT_MODE !== "webhook") {
-    await bot.launch();
+    bot.launch().then(() => {
+      console.log("Telegram bot polling started");
+    }).catch((error) => {
+      const message = error instanceof Error ? error.message : "Unknown bot launch error";
+      console.error(`Telegram bot failed to start: ${message}`);
+    });
     startReminderScheduler(bot);
+    console.log("Reminder scheduler started");
   }
   console.log(`Backend running on http://localhost:${port}`);
 });

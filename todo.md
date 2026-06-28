@@ -1,7 +1,7 @@
 # Water Tracking Telegram Bot + Web Portal — Task List
 
 ## Project Goal
-Build a Telegram bot that reminds users to drink water every 15/30/60 minutes and records their responses. A web portal will show daily progress, history, settings, and reports.
+Build a Telegram bot that reminds users to drink water at a custom interval and records their responses. A web portal will show daily progress, history, settings, and reports.
 
 ---
 
@@ -11,7 +11,7 @@ Build a Telegram bot that reminds users to drink water every 15/30/60 minutes an
 - Telegram bot start flow
 - User registration from Telegram
 - Daily water target setup
-- Reminder interval setup: 15 / 30 / 60 minutes
+- Reminder interval setup: custom minutes, minimum 1 minute
 - Active reminder time setup, example: 8:00 AM – 10:00 PM
 - Reminder message with buttons
 - Water intake log from button click
@@ -119,7 +119,7 @@ Build a Telegram bot that reminds users to drink water every 15/30/60 minutes an
 ### Start Flow
 - [x] Welcome message
 - [ ] Ask daily target: 2000ml / 2500ml / 3000ml / custom
-- [ ] Ask reminder interval: 15 / 30 / 60 minutes
+- [x] Ask reminder interval: custom minutes, minimum 1 minute
 - [x] Ask active time: default 8 AM – 10 PM
 - [x] Save user settings
 - [x] Confirm setup complete

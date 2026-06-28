@@ -10,12 +10,23 @@ export function startReminderScheduler(bot: Telegraf | null) {
   cron.schedule("* * * * *", async () => {
     const dueUsers = await getUsersDueForReminder();
     for (const item of dueUsers) {
-      const reminder = await createSentReminder(item.user.id);
-      await bot.telegram.sendMessage(
-        item.user.telegramId,
-        progressText(item.progress),
-        reminderButtons(reminder.id)
-      );
+      if (!/^\d+$/.test(item.user.telegramId)) {
+        console.warn(`Skipping reminder for non-Telegram chat id: ${item.user.telegramId}`);
+        continue;
+      }
+
+      try {
+        const reminder = await createSentReminder(item.user.id);
+        await bot.telegram.sendMessage(
+          item.user.telegramId,
+          progressText(item.progress),
+          reminderButtons(reminder.id)
+        );
+        console.log(`Reminder sent to ${item.user.telegramId}`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown reminder send error";
+        console.error(`Reminder failed for ${item.user.telegramId}: ${message}`);
+      }
     }
   });
 }

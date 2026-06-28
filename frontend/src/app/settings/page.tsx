@@ -55,18 +55,7 @@ export default function SettingsPage() {
       {saved && <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{saved}</div>}
       <form onSubmit={submit} className="grid max-w-3xl gap-4 rounded border border-slate-200 bg-white p-5 sm:grid-cols-2">
         <Field label="Daily target ml" type="number" value={form.dailyTargetMl} onChange={(value) => setForm({ ...form, dailyTargetMl: Number(value) })} />
-        <label className="block">
-          <span className="text-sm font-medium">Reminder interval</span>
-          <select
-            value={form.reminderIntervalMinutes}
-            onChange={(event) => setForm({ ...form, reminderIntervalMinutes: Number(event.target.value) })}
-            className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
-          >
-            <option value={15}>15 minutes</option>
-            <option value={30}>30 minutes</option>
-            <option value={60}>60 minutes</option>
-          </select>
-        </label>
+        <Field label="Reminder interval minutes" type="number" min={1} max={1440} value={form.reminderIntervalMinutes} onChange={(value) => setForm({ ...form, reminderIntervalMinutes: Number(value) })} />
         <Field label="Active start" type="time" value={form.activeStartTime} onChange={(value) => setForm({ ...form, activeStartTime: value })} />
         <Field label="Active end" type="time" value={form.activeEndTime} onChange={(value) => setForm({ ...form, activeEndTime: value })} />
         <Field label="Default drink amount ml" type="number" value={form.defaultDrinkAmountMl} onChange={(value) => setForm({ ...form, defaultDrinkAmountMl: Number(value) })} />
@@ -82,11 +71,11 @@ export default function SettingsPage() {
   );
 }
 
-function Field({ label, value, type, onChange }: { label: string; value: string | number; type: string; onChange: (value: string) => void }) {
+function Field({ label, value, type, min, max, onChange }: { label: string; value: string | number; type: string; min?: number; max?: number; onChange: (value: string) => void }) {
   return (
     <label className="block">
       <span className="text-sm font-medium">{label}</span>
-      <input value={value} type={type} onChange={(event) => onChange(event.target.value)} className="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
+      <input value={value} type={type} min={min} max={max} onChange={(event) => onChange(event.target.value)} className="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
     </label>
   );
 }

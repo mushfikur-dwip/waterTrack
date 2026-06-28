@@ -18,6 +18,6 @@ export function setupText() {
     "Reminder interval: 60 minutes",
     "Active time: 08:00 - 22:00",
     "",
-    "পরিবর্তন করতে /settarget 3000, /setinterval 30 অথবা /settings ব্যবহার করুন।"
+    "পরিবর্তন করতে /settarget 3000, /setinterval 1 অথবা /settings ব্যবহার করুন।"
   ].join("\n");
 }

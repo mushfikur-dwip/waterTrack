@@ -34,7 +34,9 @@ export function createBot() {
 
   bot.command("setinterval", async (ctx) => {
     const minutes = Number(ctx.message.text.split(" ")[1]);
-    if (![15, 30, 60].includes(minutes)) return ctx.reply("ব্যবহার করুন: /setinterval 15 অথবা 30 অথবা 60");
+    if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) {
+      return ctx.reply("ব্যবহার করুন: /setinterval 1\nInterval 1 থেকে 1440 মিনিটের মধ্যে হতে হবে।");
+    }
     await updateUserSettings(String(ctx.from.id), { reminderIntervalMinutes: minutes });
     return ctx.reply(`Reminder interval ${minutes} মিনিট করা হয়েছে।`);
   });
