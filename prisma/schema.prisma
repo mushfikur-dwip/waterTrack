@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String        @id @default(cuid())
+  telegramId              String        @unique @map("telegram_id")
+  firstName               String?       @map("first_name")
+  username                String?
+  timezone                String        @default("Asia/Dhaka")
+  dailyTargetMl           Int           @default(2500) @map("daily_target_ml")
+  reminderIntervalMinutes Int           @default(60) @map("reminder_interval_minutes")
+  activeStartTime         String        @default("08:00") @map("active_start_time")
+  activeEndTime           String        @default("22:00") @map("active_end_time")
+  reminderEnabled         Boolean       @default(true) @map("reminder_enabled")
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime      @updatedAt @map("updated_at")
+  logs                    WaterLog[]
+  reminders               Reminder[]
+  settings                UserSettings?
+
+  @@map("users")
+}
+
+model WaterLog {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  amountMl  Int      @map("amount_ml")
+  source    LogSource
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("water_logs")
+}
+
+model Reminder {
+  id          String         @id @default(cuid())
+  userId      String         @map("user_id")
+  scheduledAt DateTime       @map("scheduled_at")
+  sentAt      DateTime?      @map("sent_at")
+  status      ReminderStatus @default(sent)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, scheduledAt])
+  @@map("reminders")
+}
+
+model UserSettings {
+  id                   String   @id @default(cuid())
+  userId               String   @unique @map("user_id")
+  defaultDrinkAmountMl Int      @default(250) @map("default_drink_amount_ml")
+  snoozeMinutes        Int      @default(10) @map("snooze_minutes")
+  weeklyReportEnabled  Boolean  @default(true) @map("weekly_report_enabled")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+enum LogSource {
+  telegram
+  web
+}
+
+enum ReminderStatus {
+  sent
+  drank
+  skipped
+  missed
+  snoozed
+}
