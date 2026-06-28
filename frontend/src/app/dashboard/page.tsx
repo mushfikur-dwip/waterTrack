@@ -11,16 +11,23 @@ import type { Progress } from "../../components/types";
 export default function DashboardPage() {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   async function load() {
-    const telegramId = getTelegramId();
-    await api("/api/auth/telegram", {
-      method: "POST",
-      body: JSON.stringify({ telegramId, firstName: "Web User" })
-    });
-    const data = await api<Progress>(`/api/water-log/today?telegramId=${telegramId}`);
-    setProgress(data);
-    setLoading(false);
+    try {
+      setError("");
+      const telegramId = getTelegramId();
+      await api("/api/auth/telegram", {
+        method: "POST",
+        body: JSON.stringify({ telegramId, firstName: "Web User" })
+      });
+      const data = await api<Progress>(`/api/water-log/today?telegramId=${telegramId}`);
+      setProgress(data);
+    } catch {
+      setError("Backend বা database connect হচ্ছে না। .env DATABASE_URL check করে server restart করুন।");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function log(amountMl: number) {
@@ -69,7 +76,9 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {loading || !progress ? (
+      {error ? (
+        <div className="rounded border border-red-200 bg-red-50 p-6 text-sm text-red-700">{error}</div>
+      ) : loading || !progress ? (
         <div className="rounded border border-slate-200 bg-white p-6">Loading...</div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1fr_320px]">

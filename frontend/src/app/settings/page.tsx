@@ -15,6 +15,8 @@ export default function SettingsPage() {
     reminderEnabled: true,
     defaultDrinkAmountMl: 250
   });
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState("");
 
   useEffect(() => {
     api<Progress>(`/api/water-log/today?telegramId=${getTelegramId()}`).then((data) => {
@@ -26,15 +28,21 @@ export default function SettingsPage() {
         reminderEnabled: data.user.reminderEnabled,
         defaultDrinkAmountMl: data.user.settings?.defaultDrinkAmountMl ?? 250
       });
-    });
+    }).catch(() => setError("Backend বা database connect হচ্ছে না।"));
   }, []);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    await api("/api/user/settings", {
-      method: "PATCH",
-      body: JSON.stringify({ telegramId: getTelegramId(), ...form })
-    });
+    try {
+      setError("");
+      await api("/api/user/settings", {
+        method: "PATCH",
+        body: JSON.stringify({ telegramId: getTelegramId(), ...form })
+      });
+      setSaved("Settings saved.");
+    } catch {
+      setError("Settings save হয়নি। Backend বা database check করুন।");
+    }
   }
 
   return (
@@ -43,6 +51,8 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-semibold">Settings</h1>
         <p className="text-sm text-slate-500">Target, interval এবং active reminder সময় পরিবর্তন করুন।</p>
       </div>
+      {error && <div className="mb-4 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+      {saved && <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{saved}</div>}
       <form onSubmit={submit} className="grid max-w-3xl gap-4 rounded border border-slate-200 bg-white p-5 sm:grid-cols-2">
         <Field label="Daily target ml" type="number" value={form.dailyTargetMl} onChange={(value) => setForm({ ...form, dailyTargetMl: Number(value) })} />
         <label className="block">

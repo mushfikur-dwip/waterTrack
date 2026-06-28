@@ -10,6 +10,7 @@ import type { HistoryResponse, Progress } from "../../components/types";
 export default function ReportsPage() {
   const [history, setHistory] = useState<HistoryResponse | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -18,7 +19,7 @@ export default function ReportsPage() {
     ]).then(([historyData, progressData]) => {
       setHistory(historyData);
       setProgress(progressData);
-    });
+    }).catch(() => setError("Backend বা database connect হচ্ছে না।"));
   }, []);
 
   const report = useMemo(() => {
@@ -37,6 +38,7 @@ export default function ReportsPage() {
         <h1 className="text-2xl font-semibold">Reports</h1>
         <p className="text-sm text-slate-500">Weekly এবং monthly summary এক জায়গায়।</p>
       </div>
+      {error && <div className="mb-4 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Monthly total" value={`${report.total}ml`} />
         <Stat label="Daily average" value={`${report.average}ml`} tone="leaf" />
