@@ -84,6 +84,26 @@ npm --workspace backend run build
 npm --workspace frontend run build
 ```
 
+## Vercel Frontend Deploy
+
+If deploying only the frontend from this repository, use these Vercel settings:
+
+```txt
+Root Directory: frontend
+Framework Preset: Next.js
+Build Command: npm run build
+Install Command: npm install
+```
+
+Add these Vercel environment variables:
+
+```env
+NEXT_PUBLIC_API_BASE="https://api.yourdomain.com"
+NEXT_PUBLIC_TELEGRAM_BOT_USERNAME="your_bot_username"
+```
+
+Do not load the root `.env` from `frontend/next.config.ts`; Vercel injects frontend environment variables from its dashboard.
+
 ## Notes
 
 - The bot uses polling by default with `BOT_MODE=polling`.
