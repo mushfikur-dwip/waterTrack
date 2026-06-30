@@ -1,4 +1,4 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000";
+export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000").replace(/\/+$/, "");
 
 export function getTelegramId() {
   if (typeof window === "undefined") return "";
@@ -6,7 +6,7 @@ export function getTelegramId() {
 }
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(`${API_BASE}/${path.replace(/^\/+/, "")}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",

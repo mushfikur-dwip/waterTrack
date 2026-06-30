@@ -12,12 +12,12 @@ import { remindersRouter } from "./routes/reminders.js";
 const app = express();
 const bot = createBot();
 const allowedOrigins = new Set([
-  process.env.WEB_APP_URL,
+  ...parseOrigins(process.env.WEB_APP_URL),
+  ...parseOrigins(process.env.CORS_ORIGINS),
   "http://localhost:3000",
   "http://localhost:3001",
   "http://127.0.0.1:3000",
-  "http://127.0.0.1:3001",
-  "http://gpt.antdigitals.com/"
+  "http://127.0.0.1:3001"
 ].filter(Boolean));
 
 app.use(cors({
@@ -95,3 +95,10 @@ app.listen(port, async () => {
 
 process.once("SIGINT", () => bot?.stop("SIGINT"));
 process.once("SIGTERM", () => bot?.stop("SIGTERM"));
+
+function parseOrigins(value?: string) {
+  return (value ?? "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+}
